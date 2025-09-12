@@ -52,8 +52,8 @@ if old_March then
     Debris:AddItem(old_March, 0)
 end
 
-if not isfolder("March") then
-    makefolder("March")
+if not isfolder("Mouse Hub") then
+    makefolder("Mouse Hub")
 end
 
 local Connections = setmetatable({
