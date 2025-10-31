@@ -20,6 +20,8 @@ getgenv().GG = {
 
 local SelectedLanguage = GG.Language
 
+local premium_id = "1234567890"
+
 function convertStringToTable(inputString)
     local result = {}
     for value in string.gmatch(inputString, "([^,]+)") do
@@ -44,6 +46,8 @@ local Lighting = cloneref(game:GetService('Lighting'))
 local Players = cloneref(game:GetService('Players'))
 local CoreGui = cloneref(game:GetService('CoreGui'))
 local Debris = cloneref(game:GetService('Debris'))
+local MarketplaceService = game:GetService("MarketplaceService")
+local SetClipboard = cloneref(game:GetService("SetClipboard"))
 
 local LocalPlayer = Players.LocalPlayer
 local configFileName = LocalPlayer.Name .. '_' .. tostring(game.GameId)
@@ -546,7 +550,81 @@ function Library:create_ui()
     UIListLayout.Padding = UDim.new(0, 4)
     UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
     UIListLayout.Parent = Tabs
-    
+
+    local AvatarIcon = Instance.new('ImageButton')
+    AvatarIcon.Name = 'AvatarIcon'
+    AvatarIcon.Size = UDim2.new(0, 40, 0, 40)
+    AvatarIcon.Position = UDim2.new(0.5, -20, 1, -50)
+    AvatarIcon.AnchorPoint = Vector2.new(0.5, 1)
+    AvatarIcon.BackgroundTransparency = 1
+    AvatarIcon.Image = Players:GetUserThumbnailAsync(LocalPlayer.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size420x420)
+    AvatarIcon.Parent = Tabs
+
+    local AvatarMenu = Instance.new('Frame')
+    AvatarMenu.Name = 'AvatarMenu'
+    AvatarMenu.Size = UDim2.new(0, 200, 0, 150)
+    AvatarMenu.Position = UDim2.new(1, 10, 0, 0)
+    AvatarMenu.BackgroundColor3 = Color3.fromRGB(22, 28, 38)
+    AvatarMenu.BorderSizePixel = 0
+    AvatarMenu.Visible = false
+    AvatarMenu.Parent = Handler
+
+    local UICorner = Instance.new('UICorner')
+    UICorner.CornerRadius = UDim.new(0, 8)
+    UICorner.Parent = AvatarMenu
+
+    local MenuIcon = Instance.new('ImageLabel')
+    MenuIcon.Size = UDim2.new(0, 50, 0, 50)
+    MenuIcon.Position = UDim2.new(0, 10, 0, 10)
+    MenuIcon.BackgroundTransparency = 1
+    MenuIcon.Image = Players:GetUserThumbnailAsync(LocalPlayer.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size420x420)
+    MenuIcon.Parent = AvatarMenu
+
+    local UserInfo = Instance.new('TextLabel')
+    UserInfo.Size = UDim2.new(1, -70, 0, 20)
+    UserInfo.Position = UDim2.new(0, 70, 0, 10)
+    UserInfo.BackgroundTransparency = 1
+    UserInfo.Text = LocalPlayer.Name .. " (" .. (LocalPlayer.DisplayName or "") .. ")"
+    UserInfo.TextColor3 = Color3.fromRGB(255, 255, 255)
+    UserInfo.TextSize = 12
+    UserInfo.Font = Enum.Font.GothamSemibold
+    UserInfo.Parent = AvatarMenu
+
+    local PremiumLabel = Instance.new('TextLabel')
+    PremiumLabel.Size = UDim2.new(1, -70, 0, 20)
+    PremiumLabel.Position = UDim2.new(0, 70, 0, 30)
+    PremiumLabel.BackgroundTransparency = 1
+    local ownsPremium = MarketplaceService:PlayerOwnsAsset(LocalPlayer, tonumber(premium_id))
+    PremiumLabel.Text = "Premium: " .. (ownsPremium and "Yes" or "No")
+    PremiumLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    PremiumLabel.TextSize = 11
+    PremiumLabel.Font = Enum.Font.Gotham
+    PremiumLabel.Parent = AvatarMenu
+
+    local BuyButton = Instance.new('TextButton')
+    BuyButton.Size = UDim2.new(0, 80, 0, 25)
+    BuyButton.Position = UDim2.new(0, 10, 1, -35)
+    BuyButton.BackgroundColor3 = Color3.fromRGB(152, 181, 255)
+    BuyButton.Text = "Buy Premium"
+    BuyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    BuyButton.TextSize = 11
+    BuyButton.Font = Enum.Font.GothamSemibold
+    BuyButton.BorderSizePixel = 0
+    BuyButton.Parent = AvatarMenu
+
+    local BuyCorner = Instance.new('UICorner')
+    BuyCorner.CornerRadius = UDim.new(0, 4)
+    BuyCorner.Parent = BuyButton
+
+    BuyButton.MouseButton1Click:Connect(function()
+        SetClipboard("https://www.roblox.com/catalog/" .. premium_id .. "/Premium-T-Shirt")
+        Library.SendNotification({title="Copied", text="Premium link copied to clipboard!", duration=3})
+    end)
+
+    AvatarIcon.MouseButton1Click:Connect(function()
+        AvatarMenu.Visible = not AvatarMenu.Visible
+    end)
+
     local ClientName = Instance.new('TextLabel')
     ClientName.FontFace = Font.new('rbxasset://fonts/families/GothamSSm.json', Enum.FontWeight.SemiBold, Enum.FontStyle.Normal)
     ClientName.TextColor3 = Color3.fromRGB(152, 181, 255)
@@ -707,7 +785,7 @@ function Library:create_ui()
         local content = {}
     
         for _, object in March:GetDescendants() do
-            if not object:IsA('ImageLabel') then
+            if not object:IsA('ImageLabel') and not object:IsA('ImageButton') then
                 continue
             end
     
@@ -735,7 +813,12 @@ function Library:create_ui()
         self._ui_loaded = true
     end
 
-    function self:update_tabs(tab: TextButton)
+    function self:update_tabs(tab: TextButton, left_section, right_section)
+        local isPremium = MarketplaceService:PlayerOwnsAsset(LocalPlayer, tonumber(premium_id))
+        if tab.Locked and not isPremium then
+            Library.SendNotification({title="Locked", text="This tab requires premium access!", duration=3})
+            return
+        end
         for index, object in Tabs:GetChildren() do
             if object.Name ~= 'Tab' then
                 continue
@@ -766,7 +849,13 @@ function Library:create_ui()
                         ImageTransparency = 0.2,
                         ImageColor3 = Color3.fromRGB(152, 181, 255)
                     }):Play()
+
+                    if object.LockIcon then
+                        object.LockIcon.ImageTransparency = 1
+                    end
                 end
+
+                self:update_sections(left_section, right_section)
 
                 continue
             end
@@ -789,6 +878,10 @@ function Library:create_ui()
                     ImageTransparency = 0.8,
                     ImageColor3 = Color3.fromRGB(255, 255, 255)
                 }):Play()
+
+                if object.LockIcon then
+                    object.LockIcon.ImageTransparency = 0.2
+                end
             end
         end
     end
@@ -820,6 +913,7 @@ function Library:create_ui()
         local first_tab = not Tabs:FindFirstChild('Tab')
 
         local Tab = Instance.new('TextButton')
+        Tab.Locked = false
         Tab.FontFace = Font.new('rbxasset://fonts/families/SourceSansPro.json', Enum.FontWeight.Regular, Enum.FontStyle.Normal)
         Tab.TextColor3 = Color3.fromRGB(0, 0, 0)
         Tab.BorderColor3 = Color3.fromRGB(0, 0, 0)
@@ -875,6 +969,18 @@ function Library:create_ui()
         Icon.BorderSizePixel = 0
         Icon.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
         Icon.Parent = Tab
+
+        local LockIcon = Instance.new('ImageLabel')
+        LockIcon.Name = 'LockIcon'
+        LockIcon.Image = 'rbxassetid://10734951784'
+        LockIcon.Size = UDim2.new(0, 16, 0, 16)
+        LockIcon.Position = UDim2.new(1, -20, 0.5, 0)
+        LockIcon.AnchorPoint = Vector2.new(0.5, 0.5)
+        LockIcon.BackgroundTransparency = 1
+        LockIcon.ImageTransparency = 1
+        LockIcon.Parent = Tab
+
+        Tab.LockIcon = LockIcon
 
         local LeftSection = Instance.new('ScrollingFrame')
         LeftSection.Name = 'LeftSection'
@@ -942,6 +1048,15 @@ function Library:create_ui()
             self:update_sections(LeftSection, RightSection)
         end)
 
+        function TabManager:lock(state)
+            Tab.Locked = state
+            if state then
+                LockIcon.ImageTransparency = 0.2
+            else
+                LockIcon.ImageTransparency = 1
+            end
+        end
+
         function TabManager:create_module(settings: any)
 
             local LayoutOrderModule = 0;
@@ -951,6 +1066,9 @@ function Library:create_ui()
                 _size = 0,
                 _multiplier = 0
             }
+            ModuleManager.value = function(self, state)
+                self:change_state(state)
+            end
 
             if settings.section == 'right' then
                 settings.section = RightSection
@@ -1543,6 +1661,9 @@ function Library:create_ui()
             function ModuleManager:create_checkbox(settings: any)
                 LayoutOrderModule = LayoutOrderModule + 1
                 local CheckboxManager = { _state = false }
+                CheckboxManager.value = function(self, state)
+                    self:change_state(state)
+                end
             
                 if self._size == 0 then
                     self._size = 11
@@ -1834,7 +1955,7 @@ function Library:create_ui()
 
                 local Divider = Instance.new('Frame')
                 Divider.Size = UDim2.new(1, 0, 0, dividerHeight)
-                Divider.BackgroundColor3 = Color3.fromRGB(255, 255, 255) 
+                Divider.BackgroundColor3 = Color3.fromRGB(25, 25, 112) 
                 Divider.BorderSizePixel = 0
                 Divider.Name = 'Divider'
                 Divider.Parent = OuterFrame
@@ -1844,14 +1965,14 @@ function Library:create_ui()
                 local Gradient = Instance.new('UIGradient')
                 Gradient.Parent = Divider
                 Gradient.Color = ColorSequence.new({
-                    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),  
-                    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 255, 255)), 
-                    ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255, 0))  
+                    ColorSequenceKeypoint.new(0, Color3.fromRGB(25, 25, 112)),  
+                    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(25, 25, 112)), 
+                    ColorSequenceKeypoint.new(1, Color3.fromRGB(25, 25, 112, 0))  
                 })
                 Gradient.Transparency = NumberSequence.new({
-                    NumberSequenceKeypoint.new(0, 1),   
+                    NumberSequenceKeypoint.new(0, 0.5),   
                     NumberSequenceKeypoint.new(0.5, 0),
-                    NumberSequenceKeypoint.new(1, 1)
+                    NumberSequenceKeypoint.new(1, 0.5)
                 })
                 Gradient.Rotation = 0 
 
