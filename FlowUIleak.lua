@@ -24,7 +24,7 @@ function convertStringToTable(inputString)
     local result = {}
     for value in string.gmatch(inputString, "([^,]+)") do
         local trimmedValue = value:match("^%s*(.-)%s*$")
-        tablein(result, trimmedValue)
+        table.insert(result, trimmedValue)
     end
 
     return result
@@ -44,6 +44,9 @@ local Lighting = cloneref(game:GetService('Lighting'))
 local Players = cloneref(game:GetService('Players'))
 local CoreGui = cloneref(game:GetService('CoreGui'))
 local Debris = cloneref(game:GetService('Debris'))
+
+local LocalPlayer = Players.LocalPlayer
+local configFileName = LocalPlayer.Name .. '_' .. tostring(game.GameId)
 
 local mouse = Players.LocalPlayer:GetMouse()
 local old_March = CoreGui:FindFirstChild('March')
@@ -164,7 +167,7 @@ function AcrylicBlur:create_root()
     part.Name = 'Root'
     part.Color = Color3.new(0, 0, 0)
     part.Material = Enum.Material.Glass
-    part.Size = Vector3.new(1, 1, 0)  -- Use a thin part
+    part.Size = Vector3.new(1, 1, 0)  
     part.Anchored = true
     part.CanCollide = false
     part.CanQuery = false
@@ -174,11 +177,11 @@ function AcrylicBlur:create_root()
     part.Parent = self._folder
 
     local specialMesh = Instance.new('SpecialMesh')
-    specialMesh.MeshType = Enum.MeshType.Brick  -- Use Brick mesh or another type suitable for the effect
-    specialMesh.Offset = Vector3.new(0, 0, -0.000001)  -- Small offset to prevent z-fighting
+    specialMesh.MeshType = Enum.MeshType.Brick  
+    specialMesh.Offset = Vector3.new(0, 0, -0.000001)  
     specialMesh.Parent = part
 
-    self._root = part  -- Store the part as root
+    self._root = part  
 end
 
 function AcrylicBlur:setup()
@@ -311,7 +314,7 @@ local Config = setmetatable({
 }, Config)
 
 local Library = {
-    _config = Config:load(game.GameId),
+    _config = Config:load(configFileName),
 
     _choosing_keybind = false,
     _device = nil,
@@ -340,8 +343,8 @@ end
 
 local NotificationContainer = Instance.new("Frame")
 NotificationContainer.Name = "RobloxCoreGuis"
-NotificationContainer.Size = UDim2.new(0, 300, 0, 0)  -- Fixed width (300px), dynamic height (Y)
-NotificationContainer.Position = UDim2.new(0.8, 0, 0, 10)  -- Right side, offset by 10 from top
+NotificationContainer.Size = UDim2.new(0, 300, 0, 0)  
+NotificationContainer.Position = UDim2.new(0.8, 0, 0, 10)  
 NotificationContainer.BackgroundTransparency = 1
 NotificationContainer.ClipsDescendants = false;
 NotificationContainer.Parent = game:GetService("CoreGui").RobloxGui:FindFirstChild("RobloxCoreGuis") or Instance.new("ScreenGui", game:GetService("CoreGui").RobloxGui)
@@ -356,26 +359,26 @@ UIListLayout.Parent = NotificationContainer
 function Library.SendNotification(settings)
 
     local Notification = Instance.new("Frame")
-    Notification.Size = UDim2.new(1, 0, 0, 60)  -- Width = 100% of NotificationContainer's width, dynamic height (Y)
-    Notification.BackgroundTransparency = 1  -- Outer frame is transparent for layout to work
+    Notification.Size = UDim2.new(1, 0, 0, 60)  
+    Notification.BackgroundTransparency = 1  
     Notification.BorderSizePixel = 0
     Notification.Name = "Notification"
-    Notification.Parent = NotificationContainer  -- Parent it to your NotificationContainer (the parent of the list layout)
-    Notification.AutomaticSize = Enum.AutomaticSize.Y  -- Allow this frame to resize based on child height
+    Notification.Parent = NotificationContainer  
+    Notification.AutomaticSize = Enum.AutomaticSize.Y  
 
     local UICorner = Instance.new("UICorner")
     UICorner.CornerRadius = UDim.new(0, 4)
     UICorner.Parent = Notification
 
     local InnerFrame = Instance.new("Frame")
-    InnerFrame.Size = UDim2.new(1, 0, 0, 60)  -- Start with an initial height, width will adapt
-    InnerFrame.Position = UDim2.new(0, 0, 0, 0)  -- Positioned inside the outer notification frame
+    InnerFrame.Size = UDim2.new(1, 0, 0, 60)  
+    InnerFrame.Position = UDim2.new(0, 0, 0, 0)  
     InnerFrame.BackgroundColor3 = Color3.fromRGB(32, 38, 51)
     InnerFrame.BackgroundTransparency = 0.1
     InnerFrame.BorderSizePixel = 0
     InnerFrame.Name = "InnerFrame"
     InnerFrame.Parent = Notification
-    InnerFrame.AutomaticSize = Enum.AutomaticSize.Y  -- Automatically resize based on its content
+    InnerFrame.AutomaticSize = Enum.AutomaticSize.Y  
 
     local InnerUICorner = Instance.new("UICorner")
     InnerUICorner.CornerRadius = UDim.new(0, 4)
@@ -386,13 +389,13 @@ function Library.SendNotification(settings)
     Title.TextColor3 = Color3.fromRGB(210, 210, 210)
     Title.FontFace = Font.new('rbxasset://fonts/families/GothamSSm.json', Enum.FontWeight.SemiBold, Enum.FontStyle.Normal)
     Title.TextSize = 14
-    Title.Size = UDim2.new(1, -10, 0, 20)  -- Width is 1 (100% of parent width), height is fixed initially
+    Title.Size = UDim2.new(1, -10, 0, 20)  
     Title.Position = UDim2.new(0, 5, 0, 5)
     Title.BackgroundTransparency = 1
     Title.TextXAlignment = Enum.TextXAlignment.Left
     Title.TextYAlignment = Enum.TextYAlignment.Center
-    Title.TextWrapped = true  -- Enable wrapping
-    Title.AutomaticSize = Enum.AutomaticSize.Y  -- Allow the title to resize based on content
+    Title.TextWrapped = true  
+    Title.AutomaticSize = Enum.AutomaticSize.Y  
     Title.Parent = InnerFrame
 
     local Body = Instance.new("TextLabel")
@@ -400,20 +403,20 @@ function Library.SendNotification(settings)
     Body.TextColor3 = Color3.fromRGB(180, 180, 180)
     Body.FontFace = Font.new('rbxasset://fonts/families/GothamSSm.json', Enum.FontWeight.Regular, Enum.FontStyle.Normal)
     Body.TextSize = 12
-    Body.Size = UDim2.new(1, -10, 0, 30)  -- Width is 1 (100% of parent width), height is fixed initially
+    Body.Size = UDim2.new(1, -10, 0, 30)  
     Body.Position = UDim2.new(0, 5, 0, 25)
     Body.BackgroundTransparency = 1
     Body.TextXAlignment = Enum.TextXAlignment.Left
     Body.TextYAlignment = Enum.TextYAlignment.Top
-    Body.TextWrapped = true  -- Enable wrapping for long text
-    Body.AutomaticSize = Enum.AutomaticSize.Y  -- Allow the body text to resize based on content
+    Body.TextWrapped = true  
+    Body.AutomaticSize = Enum.AutomaticSize.Y  
     Body.Parent = InnerFrame
 
     task.spawn(function()
-        wait(0.1)  -- Allow text wrapping to finish
+        wait(0.1)  
 
-        local totalHeight = Title.TextBounds.Y + Body.TextBounds.Y + 10  -- Add padding
-        InnerFrame.Size = UDim2.new(1, 0, 0, totalHeight)  -- Resize the inner frame
+        local totalHeight = Title.TextBounds.Y + Body.TextBounds.Y + 10  
+        InnerFrame.Size = UDim2.new(1, 0, 0, totalHeight)  
     end)
 
     task.spawn(function()
@@ -423,11 +426,11 @@ function Library.SendNotification(settings)
         })
         tweenIn:Play()
 
-        local duration = settings.duration or 5  -- Default to 5 seconds if not provided
+        local duration = settings.duration or 5  
         wait(duration)
 
         local tweenOut = TweenService:Create(InnerFrame, TweenInfo.new(0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.In), {
-            Position = UDim2.new(1, 310, 0, 10 + NotificationContainer.Size.Y.Offset)  -- Move to the right off-screen
+            Position = UDim2.new(1, 310, 0, 10 + NotificationContainer.Size.Y.Offset)  
         })
         tweenOut:Play()
 
@@ -586,7 +589,7 @@ function Library:create_ui()
     Icon.ScaleType = Enum.ScaleType.Fit
     Icon.BorderColor3 = Color3.fromRGB(0, 0, 0)
     Icon.AnchorPoint = Vector2.new(0, 0.5)
-    Icon.Image = 'rbxassetid://107819132007001'
+    Icon.Image = 'rbxassetid://15822475430'
     Icon.BackgroundTransparency = 1
     Icon.Position = UDim2.new(0.02500000037252903, 0, 0.054999999701976776, 0)
     Icon.Name = 'Icon'
@@ -838,7 +841,7 @@ function Library:create_ui()
         local TextLabel = Instance.new('TextLabel')
         TextLabel.FontFace = Font.new('rbxasset://fonts/families/GothamSSm.json', Enum.FontWeight.SemiBold, Enum.FontStyle.Normal)
         TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-        TextLabel.TextTransparency = 0.7 -- 0.800000011920929
+        TextLabel.TextTransparency = 0.7 
         TextLabel.Text = title
         TextLabel.Size = UDim2.new(0, font_size.X, 0, 16)
         TextLabel.AnchorPoint = Vector2.new(0, 0.5)
@@ -1180,7 +1183,7 @@ function Library:create_ui()
                 end
 
                 Library._config._flags[settings.flag] = self._state
-                Config:save(game.GameId, Library._config)
+                Config:save(configFileName, Library._config)
 
                 settings.callback(self._state)
             end
@@ -1268,7 +1271,7 @@ function Library:create_ui()
                         ModuleManager:scale_keybind(true)
 
                         Library._config._keybinds[settings.flag] = nil
-                        Config:save(game.GameId, Library._config)
+                        Config:save(configFileName, Library._config)
 
                         TextLabel.Text = 'None'
                         
@@ -1289,7 +1292,7 @@ function Library:create_ui()
                     Connections['keybind_choose_start'] = nil
                     
                     Library._config._keybinds[settings.flag] = tostring(input.KeyCode)
-                    Config:save(game.GameId, Library._config)
+                    Config:save(configFileName, Library._config)
 
                     if Connections[settings.flag..'_keybind'] then
                         Connections[settings.flag..'_keybind']:Disconnect()
@@ -1330,10 +1333,10 @@ function Library:create_ui()
                 local Paragraph = Instance.new('Frame')
                 Paragraph.BackgroundColor3 = Color3.fromRGB(32, 38, 51)
                 Paragraph.BackgroundTransparency = 0.1
-                Paragraph.Size = UDim2.new(0, 207, 0, 30) -- Initial size, auto-resized later
+                Paragraph.Size = UDim2.new(0, 207, 0, 30) 
                 Paragraph.BorderSizePixel = 0
                 Paragraph.Name = "Paragraph"
-                Paragraph.AutomaticSize = Enum.AutomaticSize.Y -- Support auto-resizing height
+                Paragraph.AutomaticSize = Enum.AutomaticSize.Y 
                 Paragraph.Parent = Options
                 Paragraph.LayoutOrder = LayoutOrderModule;
             
@@ -1399,7 +1402,7 @@ function Library:create_ui()
                     self._size = 11
                 end
             
-                self._size += settings.customScale or 50 -- Adjust the default height for text elements
+                self._size += settings.customScale or 50 
             
                 if ModuleManager._state then
                     Module.Size = UDim2.fromOffset(241, 93 + self._size)
@@ -1410,10 +1413,10 @@ function Library:create_ui()
                 local TextFrame = Instance.new('Frame')
                 TextFrame.BackgroundColor3 = Color3.fromRGB(32, 38, 51)
                 TextFrame.BackgroundTransparency = 0.1
-                TextFrame.Size = UDim2.new(0, 207, 0, settings.CustomYSize) -- Initial size, auto-resized later
+                TextFrame.Size = UDim2.new(0, 207, 0, settings.CustomYSize) 
                 TextFrame.BorderSizePixel = 0
                 TextFrame.Name = "Text"
-                TextFrame.AutomaticSize = Enum.AutomaticSize.Y -- Support auto-resizing height
+                TextFrame.AutomaticSize = Enum.AutomaticSize.Y 
                 TextFrame.Parent = Options
                 TextFrame.LayoutOrder = LayoutOrderModule
             
@@ -1426,10 +1429,10 @@ function Library:create_ui()
                 Body.TextColor3 = Color3.fromRGB(180, 180, 180)
             
                 if not settings.rich then
-                    Body.Text = settings.text or "Skibidi" -- Default text
+                    Body.Text = settings.text or "Skibidi" 
                 else
                     Body.RichText = true
-                    Body.Text = settings.richtext or "<font color='rgb(255,0,0)'>March</font> user" -- Default rich text
+                    Body.Text = settings.richtext or "<font color='rgb(255,0,0)'>March</font> user" 
                 end
             
                 Body.Size = UDim2.new(1, -10, 1, 0)
@@ -1456,10 +1459,10 @@ function Library:create_ui()
 
                 function TextManager:Set(new_settings)
                     if not new_settings.rich then
-                        Body.Text = new_settings.text or "Skibidi" -- Default text
+                        Body.Text = new_settings.text or "Skibidi" 
                     else
                         Body.RichText = true
-                        Body.Text = new_settings.richtext or "<font color='rgb(255,0,0)'>March</font> user" -- Default rich text
+                        Body.Text = new_settings.richtext or "<font color='rgb(255,0,0)'>March</font> user" 
                     end
                 end;
             
@@ -1522,7 +1525,7 @@ function Library:create_ui()
                 function TextboxManager:update_text(text: string)
                     self._text = text
                     Library._config._flags[settings.flag] = self._text
-                    Config:save(game.GameId, Library._config)
+                    Config:save(configFileName, Library._config)
                     settings.callback(self._text)
                 end
             
@@ -1658,7 +1661,7 @@ function Library:create_ui()
                         }):Play()
                     end
                     Library._config._flags[settings.flag] = self._state
-                    Config:save(game.GameId, Library._config)
+                    Config:save(configFileName, Library._config)
                     settings.callback(self._state)
                 end
             
@@ -1685,7 +1688,7 @@ function Library:create_ui()
                         if keyInput.KeyCode == Enum.KeyCode.Backspace then
                             ModuleManager:scale_keybind(true)
                             Library._config._keybinds[settings.flag] = nil
-                            Config:save(game.GameId, Library._config)
+                            Config:save(configFileName, Library._config)
                             KeybindLabel.Text = "..."
                             if Connections[settings.flag .. "_keybind"] then
                                 Connections[settings.flag .. "_keybind"]:Disconnect()
@@ -1698,7 +1701,7 @@ function Library:create_ui()
             
                         chooseConnection:Disconnect()
                         Library._config._keybinds[settings.flag] = tostring(keyInput.KeyCode)
-                        Config:save(game.GameId, Library._config)
+                        Config:save(configFileName, Library._config)
                         if Connections[settings.flag .. "_keybind"] then
                             Connections[settings.flag .. "_keybind"]:Disconnect()
                             Connections[settings.flag .. "_keybind"] = nil
@@ -1741,11 +1744,11 @@ function Library:create_ui()
                 end
 
                 local dividerHeight = 1
-                local dividerWidth = 207 -- Adjust this to fit your UI width
+                local dividerWidth = 207 
 
                 local OuterFrame = Instance.new('Frame')
-                OuterFrame.Size = UDim2.new(0, dividerWidth, 0, 20) -- Height here controls spacing above and below
-                OuterFrame.BackgroundTransparency = 1 -- Fully invisible
+                OuterFrame.Size = UDim2.new(0, dividerWidth, 0, 20) 
+                OuterFrame.BackgroundTransparency = 1 
                 OuterFrame.Name = 'OuterFrame'
                 OuterFrame.Parent = Options
                 OuterFrame.LayoutOrder = LayoutOrderModule
@@ -1753,7 +1756,7 @@ function Library:create_ui()
                 if settings and settings.showtopic then
                     local TextLabel = Instance.new('TextLabel')
                     TextLabel.FontFace = Font.new('rbxasset://fonts/families/GothamSSm.json', Enum.FontWeight.SemiBold, Enum.FontStyle.Normal)
-                    TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255) -- 154, 182, 255
+                    TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255) 
                     TextLabel.TextTransparency = 0
                     TextLabel.Text = settings.title
                     TextLabel.Size = UDim2.new(0, 153, 0, 13)
@@ -1774,34 +1777,89 @@ function Library:create_ui()
 
                     local Divider = Instance.new('Frame')
                     Divider.Size = UDim2.new(1, 0, 0, dividerHeight)
-                    Divider.BackgroundColor3 = Color3.fromRGB(255, 255, 255) -- White color
+                    Divider.BackgroundColor3 = Color3.fromRGB(255, 255, 255) 
                     Divider.BorderSizePixel = 0
                     Divider.Name = 'Divider'
                     Divider.Parent = OuterFrame
                     Divider.ZIndex = 2;
-                    Divider.Position = UDim2.new(0, 0, 0.5, -dividerHeight / 2) -- Center the divider vertically in the OuterFrame
+                    Divider.Position = UDim2.new(0, 0, 0.5, -dividerHeight / 2) 
 
                     local Gradient = Instance.new('UIGradient')
                     Gradient.Parent = Divider
                     Gradient.Color = ColorSequence.new({
-                        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),  -- Start with white
-                        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 255, 255)), -- Keep it white in the middle
-                        ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255, 0))  -- Fade to transparent on the right side
+                        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),  
+                        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 255, 255)), 
+                        ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255, 0))  
                     })
                     Gradient.Transparency = NumberSequence.new({
                         NumberSequenceKeypoint.new(0, 1),   
                         NumberSequenceKeypoint.new(0.5, 0),
                         NumberSequenceKeypoint.new(1, 1)
                     })
-                    Gradient.Rotation = 0 -- Horizontal gradient (fade from left to right)
+                    Gradient.Rotation = 0 
 
                     local UICorner = Instance.new('UICorner')
-                    UICorner.CornerRadius = UDim.new(0, 2) -- Small corner radius for smooth edges
+                    UICorner.CornerRadius = UDim.new(0, 2) 
                     UICorner.Parent = Divider
 
                 end;
             
                 return true;
+            end
+
+            function ModuleManager:create_line()
+                LayoutOrderModule = LayoutOrderModule + 1;
+
+                if self._size == 0 then
+                    self._size = 11
+                end
+
+                self._size += 27
+
+                if ModuleManager._state then
+                    Module.Size = UDim2.fromOffset(241, 93 + self._size)
+                end
+
+                Options.Size = UDim2.fromOffset(241, self._size)
+
+                local dividerHeight = 1
+                local dividerWidth = 207 
+
+                local OuterFrame = Instance.new('Frame')
+                OuterFrame.Size = UDim2.new(0, dividerWidth, 0, 20) 
+                OuterFrame.BackgroundTransparency = 1 
+                OuterFrame.Name = 'OuterFrame'
+                OuterFrame.Parent = Options
+                OuterFrame.LayoutOrder = LayoutOrderModule
+
+                local Divider = Instance.new('Frame')
+                Divider.Size = UDim2.new(1, 0, 0, dividerHeight)
+                Divider.BackgroundColor3 = Color3.fromRGB(255, 255, 255) 
+                Divider.BorderSizePixel = 0
+                Divider.Name = 'Divider'
+                Divider.Parent = OuterFrame
+                Divider.ZIndex = 2;
+                Divider.Position = UDim2.new(0, 0, 0.5, -dividerHeight / 2) 
+
+                local Gradient = Instance.new('UIGradient')
+                Gradient.Parent = Divider
+                Gradient.Color = ColorSequence.new({
+                    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),  
+                    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 255, 255)), 
+                    ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255, 0))  
+                })
+                Gradient.Transparency = NumberSequence.new({
+                    NumberSequenceKeypoint.new(0, 1),   
+                    NumberSequenceKeypoint.new(0.5, 0),
+                    NumberSequenceKeypoint.new(1, 1)
+                })
+                Gradient.Rotation = 0 
+
+                local UICorner = Instance.new('UICorner')
+                UICorner.CornerRadius = UDim.new(0, 2) 
+                UICorner.Parent = Divider
+
+                return OuterFrame
             end
             
             function ModuleManager:create_slider(settings: any)
@@ -1972,7 +2030,7 @@ function Library:create_ui()
                         Connections:disconnect('slider_input_'..settings.flag)
 
                         if not settings.ignoresaved then
-                            Config:save(game.GameId, Library._config);
+                            Config:save(configFileName, Library._config);
                         end;
                     end)
                 end
@@ -2176,7 +2234,7 @@ function Library:create_ui()
                         if CurrentTargetValue then
                             for value in string.gmatch(CurrentTargetValue, "([^,]+)") do
 
-                                local trimmedValue = value:match("^%s*(.-)%s*$")  -- Trim leading and trailing spaces
+                                local trimmedValue = value:match("^%s*(.-)%s*$")  
 
                                 if trimmedValue ~= "Label" then
                                     table.insert(selected, trimmedValue)
@@ -2185,7 +2243,7 @@ function Library:create_ui()
                         else
                             for value in string.gmatch(CurrentOption.Text, "([^,]+)") do
 
-                                local trimmedValue = value:match("^%s*(.-)%s*$")  -- Trim leading and trailing spaces
+                                local trimmedValue = value:match("^%s*(.-)%s*$")  
 
                                 if trimmedValue ~= "Label" then
                                     table.insert(selected, trimmedValue)
@@ -2251,7 +2309,7 @@ function Library:create_ui()
                         Library._config._flags[settings.flag] = option
                     end
 
-                    Config:save(game.GameId, Library._config)
+                    Config:save(configFileName, Library._config)
 
                     settings.callback(option)
                 end
@@ -2508,7 +2566,7 @@ function Library:create_ui()
                         checked = not checked
                         Checkbox.BackgroundColor3 = checked and Color3.fromRGB(152, 181, 255) or Color3.fromRGB(32, 38, 51)
                         Library._config._flags[settings.flag].checked = checked
-                        Config:save(game.GameId, Library._config)
+                        Config:save(configFileName, Library._config)
                         if settings.callback then
                             settings.callback(checked)
                         end
@@ -2537,12 +2595,12 @@ function Library:create_ui()
                             if newKey ~= "Unknown" then
                                 KeybindBox.Text = newKey;
                             end;
-                            Config:save(game.GameId, Library._config) -- Save new keybind
+                            Config:save(configFileName, Library._config) 
                             inputConnection:Disconnect()
                         elseif input.UserInputType == Enum.UserInputType.MouseButton3 then
                             Library._config._flags[settings.flag].BIND = "Unknown"
                             KeybindBox.Text = "..."
-                            Config:save(game.GameId, Library._config)
+                            Config:save(configFileName, Library._config)
                             inputConnection:Disconnect()
                         end
                     end)
