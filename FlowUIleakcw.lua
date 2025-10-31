@@ -1806,6 +1806,61 @@ function Library:create_ui()
             
                 return true;
             end
+
+            function ModuleManager:create_line()
+                LayoutOrderModule = LayoutOrderModule + 1;
+
+                if self._size == 0 then
+                    self._size = 11
+                end
+
+                self._size += 27
+
+                if ModuleManager._state then
+                    Module.Size = UDim2.fromOffset(241, 93 + self._size)
+                end
+
+                Options.Size = UDim2.fromOffset(241, self._size)
+
+                local dividerHeight = 1
+                local dividerWidth = 207 
+
+                local OuterFrame = Instance.new('Frame')
+                OuterFrame.Size = UDim2.new(0, dividerWidth, 0, 20) 
+                OuterFrame.BackgroundTransparency = 1 
+                OuterFrame.Name = 'OuterFrame'
+                OuterFrame.Parent = Options
+                OuterFrame.LayoutOrder = LayoutOrderModule
+
+                local Divider = Instance.new('Frame')
+                Divider.Size = UDim2.new(1, 0, 0, dividerHeight)
+                Divider.BackgroundColor3 = Color3.fromRGB(255, 255, 255) 
+                Divider.BorderSizePixel = 0
+                Divider.Name = 'Divider'
+                Divider.Parent = OuterFrame
+                Divider.ZIndex = 2;
+                Divider.Position = UDim2.new(0, 0, 0.5, -dividerHeight / 2) 
+
+                local Gradient = Instance.new('UIGradient')
+                Gradient.Parent = Divider
+                Gradient.Color = ColorSequence.new({
+                    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),  
+                    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 255, 255)), 
+                    ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255, 0))  
+                })
+                Gradient.Transparency = NumberSequence.new({
+                    NumberSequenceKeypoint.new(0, 1),   
+                    NumberSequenceKeypoint.new(0.5, 0),
+                    NumberSequenceKeypoint.new(1, 1)
+                })
+                Gradient.Rotation = 0 
+
+                local UICorner = Instance.new('UICorner')
+                UICorner.CornerRadius = UDim.new(0, 2) 
+                UICorner.Parent = Divider
+
+                return OuterFrame
+            end
             
             function ModuleManager:create_slider(settings: any)
 
