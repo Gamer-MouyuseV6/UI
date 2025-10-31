@@ -20,8 +20,6 @@ getgenv().GG = {
 
 local SelectedLanguage = GG.Language
 
-local premium_id = "1234567890"
-
 function convertStringToTable(inputString)
     local result = {}
     for value in string.gmatch(inputString, "([^,]+)") do
@@ -46,7 +44,7 @@ local Lighting = cloneref(game:GetService('Lighting'))
 local Players = cloneref(game:GetService('Players'))
 local CoreGui = cloneref(game:GetService('CoreGui'))
 local Debris = cloneref(game:GetService('Debris'))
-local MarketplaceService = cloneref(game:GetService("MarketplaceService"))
+local MarketplaceService = cloneref(game:GetService('MarketplaceService'))
 
 local LocalPlayer = Players.LocalPlayer
 local configFileName = LocalPlayer.Name .. '_' .. tostring(game.GameId)
@@ -534,7 +532,7 @@ function Library:create_ui()
     Tabs.ScrollBarImageTransparency = 1
     Tabs.ScrollBarThickness = 0
     Tabs.Name = 'Tabs'
-    Tabs.Size = UDim2.new(0, 129, 0, 401)
+    Tabs.Size = UDim2.new(0, 129, 0, 350)
     Tabs.Selectable = false
     Tabs.AutomaticCanvasSize = Enum.AutomaticSize.XY
     Tabs.BackgroundTransparency = 1
@@ -601,6 +599,75 @@ function Library:create_ui()
     Icon.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     Icon.Parent = Handler
     
+    local UserAvatarIcon = Instance.new('ImageButton')
+    UserAvatarIcon.Name = 'UserAvatarIcon'
+    UserAvatarIcon.Size = UDim2.new(0, 50, 0, 50)
+    UserAvatarIcon.Position = UDim2.new(0.026, 0, 0.85, 0)
+    UserAvatarIcon.BackgroundTransparency = 1
+    UserAvatarIcon.Image = 'rbxthumb://type=AvatarHeadShot&id=' .. LocalPlayer.UserId .. '&w=420&h=420'
+    UserAvatarIcon.ScaleType = Enum.ScaleType.Fit
+    UserAvatarIcon.Parent = Handler
+
+    local UserMenu = Instance.new('Frame')
+    UserMenu.Name = 'UserMenu'
+    UserMenu.Size = UDim2.new(0, 150, 0, 120)
+    UserMenu.Position = UDim2.new(0, 60, 0, 0)
+    UserMenu.BackgroundColor3 = Color3.fromRGB(22, 28, 38)
+    UserMenu.BackgroundTransparency = 0.5
+    UserMenu.BorderSizePixel = 0
+    UserMenu.Visible = false
+    UserMenu.Parent = Handler
+
+    local UICornerMenu = Instance.new('UICorner')
+    UICornerMenu.CornerRadius = UDim.new(0, 8)
+    UICornerMenu.Parent = UserMenu
+
+    local UIStrokeMenu = Instance.new('UIStroke')
+    UIStrokeMenu.Color = Color3.fromRGB(52, 66, 89)
+    UIStrokeMenu.Transparency = 0.5
+    UIStrokeMenu.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    UIStrokeMenu.Parent = UserMenu
+
+    local MenuIcon = Instance.new('ImageLabel')
+    MenuIcon.Name = 'MenuIcon'
+    MenuIcon.Size = UDim2.new(0, 40, 0, 40)
+    MenuIcon.Position = UDim2.new(0, 5, 0, 5)
+    MenuIcon.BackgroundTransparency = 1
+    MenuIcon.Image = 'rbxthumb://type=AvatarHeadShot&id=' .. LocalPlayer.UserId .. '&w=420&h=420'
+    MenuIcon.ScaleType = Enum.ScaleType.Fit
+    MenuIcon.Parent = UserMenu
+
+    local MenuName = Instance.new('TextLabel')
+    MenuName.Name = 'MenuName'
+    MenuName.Size = UDim2.new(1, -10, 0, 20)
+    MenuName.Position = UDim2.new(0, 5, 0, 50)
+    MenuName.BackgroundTransparency = 1
+    MenuName.Text = LocalPlayer.DisplayName .. '\n' .. LocalPlayer.Name
+    MenuName.TextColor3 = Color3.fromRGB(255, 255, 255)
+    MenuName.TextXAlignment = Enum.TextXAlignment.Left
+    MenuName.Font = Enum.Font.GothamBold
+    MenuName.TextSize = 12
+    MenuName.Parent = UserMenu
+
+    local PremiumLabel = Instance.new('TextLabel')
+    PremiumLabel.Name = 'PremiumLabel'
+    PremiumLabel.Size = UDim2.new(1, -10, 0, 20)
+    PremiumLabel.Position = UDim2.new(0, 5, 0, 75)
+    PremiumLabel.BackgroundTransparency = 1
+    PremiumLabel.Text = 'Premium: ' .. (LocalPlayer.MembershipType == Enum.MembershipType.Premium and 'Yes' or 'No')
+    PremiumLabel.TextColor3 = Color3.fromRGB(152, 181, 255)
+    PremiumLabel.TextXAlignment = Enum.TextXAlignment.Left
+    PremiumLabel.Font = Enum.Font.Gotham
+    PremiumLabel.TextSize = 11
+    PremiumLabel.Parent = UserMenu
+
+    UserAvatarIcon.MouseButton1Click:Connect(function()
+        UserMenu.Visible = not UserMenu.Visible
+        if UserMenu.Visible then
+            UserMenu.Position = UDim2.new(0, UserAvatarIcon.AbsolutePosition.X + 50, 0, UserAvatarIcon.AbsolutePosition.Y)
+        end
+    end)
+
     local Divider = Instance.new('Frame')
     Divider.Name = 'Divider'
     Divider.BackgroundTransparency = 0.5
@@ -630,90 +697,7 @@ function Library:create_ui()
     Minimize.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     Minimize.Parent = Handler
     
-    local AvatarIcon = Instance.new('ImageLabel')
-    AvatarIcon.Name = 'AvatarIcon'
-    AvatarIcon.Size = UDim2.new(0, 32, 0, 32)
-    AvatarIcon.Position = UDim2.new(0, 10, 0, 10)
-    AvatarIcon.BackgroundTransparency = 1
-    AvatarIcon.Image = Players:GetUserThumbnailAsync(LocalPlayer.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size100x100)
-    AvatarIcon.Parent = Handler
-    local AvatarCorner = Instance.new('UICorner')
-    AvatarCorner.CornerRadius = UDim.new(0, 16)
-    AvatarCorner.Parent = AvatarIcon
-    
-    local AvatarMenu = Instance.new('Frame')
-    AvatarMenu.Name = 'AvatarMenu'
-    AvatarMenu.Size = UDim2.new(0, 200, 0, 120)
-    AvatarMenu.Position = UDim2.new(0, 0, 0, 42)
-    AvatarMenu.BackgroundColor3 = Color3.fromRGB(22, 28, 38)
-    AvatarMenu.Visible = false
-    AvatarMenu.Parent = AvatarIcon
-    local AvatarMenuCorner = Instance.new('UICorner')
-    AvatarMenuCorner.CornerRadius = UDim.new(0, 8)
-    AvatarMenuCorner.Parent = AvatarMenu
-    local AvatarMenuStroke = Instance.new('UIStroke')
-    AvatarMenuStroke.Color = Color3.fromRGB(52, 66, 89)
-    AvatarMenuStroke.Parent = AvatarMenu
-    
-    local MenuIcon = Instance.new('ImageLabel')
-    MenuIcon.Name = 'MenuIcon'
-    MenuIcon.Size = UDim2.new(0, 40, 0, 40)
-    MenuIcon.Position = UDim2.new(0, 10, 0, 10)
-    MenuIcon.BackgroundTransparency = 1
-    MenuIcon.Image = Players:GetUserThumbnailAsync(LocalPlayer.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size100x100)
-    MenuIcon.Parent = AvatarMenu
-    local MenuIconCorner = Instance.new('UICorner')
-    MenuIconCorner.CornerRadius = UDim.new(0, 20)
-    MenuIconCorner.Parent = MenuIcon
-    
-    local UsernameLabel = Instance.new('TextLabel')
-    UsernameLabel.Name = 'UsernameLabel'
-    UsernameLabel.Size = UDim2.new(1, -20, 0, 20)
-    UsernameLabel.Position = UDim2.new(0, 60, 0, 10)
-    UsernameLabel.BackgroundTransparency = 1
-    UsernameLabel.Text = LocalPlayer.Name .. " (" .. LocalPlayer.DisplayName .. ")"
-    UsernameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    UsernameLabel.TextSize = 12
-    UsernameLabel.Font = Enum.Font.GothamSemibold
-    UsernameLabel.TextXAlignment = Enum.TextXAlignment.Left
-    UsernameLabel.Parent = AvatarMenu
-    
-    local PremiumLabel = Instance.new('TextLabel')
-    PremiumLabel.Name = 'PremiumLabel'
-    PremiumLabel.Size = UDim2.new(1, -20, 0, 20)
-    PremiumLabel.Position = UDim2.new(0, 60, 0, 30)
-    PremiumLabel.BackgroundTransparency = 1
-    local isPremium = MarketplaceService:UserOwnsAssetAsync(LocalPlayer.UserId, tonumber(premium_id))
-    PremiumLabel.Text = "Premium: " .. (isPremium and "Yes" or "No")
-    PremiumLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    PremiumLabel.TextSize = 11
-    PremiumLabel.Font = Enum.Font.Gotham
-    PremiumLabel.TextXAlignment = Enum.TextXAlignment.Left
-    PremiumLabel.Parent = AvatarMenu
-    
-    local BuyPremiumButton = Instance.new('TextButton')
-    BuyPremiumButton.Name = 'BuyPremiumButton'
-    BuyPremiumButton.Size = UDim2.new(1, -20, 0, 25)
-    BuyPremiumButton.Position = UDim2.new(0, 10, 0, 60)
-    BuyPremiumButton.BackgroundColor3 = Color3.fromRGB(152, 181, 255)
-    BuyPremiumButton.Text = "Buy Premium"
-    BuyPremiumButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    BuyPremiumButton.TextSize = 11
-    BuyPremiumButton.Font = Enum.Font.GothamSemibold
-    BuyPremiumButton.Parent = AvatarMenu
-    local BuyPremiumCorner = Instance.new('UICorner')
-    BuyPremiumCorner.CornerRadius = UDim.new(0, 4)
-    BuyPremiumCorner.Parent = BuyPremiumButton
-    
-    BuyPremiumButton.MouseButton1Click:Connect(function()
-        setclipboard("https://www.roblox.com/catalog/" .. premium_id .. "/Premium-T-Shirt")
-    end)
-    
-    AvatarIcon.MouseButton1Click:Connect(function()
-        AvatarMenu.Visible = not AvatarMenu.Visible
-    end)
-    
-    UIScale = Instance.new('UIScale')
+    local UIScale = Instance.new('UIScale')
     UIScale.Parent = Container    
     
     self._ui = March
@@ -799,6 +783,9 @@ function Library:create_ui()
     
             table.insert(content, object)
         end
+
+        table.insert(content, UserAvatarIcon)
+        table.insert(content, MenuIcon)
     
         ContentProvider:PreloadAsync(content)
         self:get_device()
@@ -962,16 +949,6 @@ function Library:create_ui()
         Icon.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
         Icon.Parent = Tab
 
-        local LockIcon = Instance.new('ImageLabel')
-        LockIcon.Name = 'LockIcon'
-        LockIcon.Image = 'rbxassetid://10734973434'
-        LockIcon.Size = UDim2.new(0, 16, 0, 16)
-        LockIcon.Position = UDim2.new(1, -20, 0.5, 0)
-        LockIcon.AnchorPoint = Vector2.new(0.5, 0.5)
-        LockIcon.BackgroundTransparency = 1
-        LockIcon.Visible = false
-        LockIcon.Parent = Tab
-
         local LeftSection = Instance.new('ScrollingFrame')
         LeftSection.Name = 'LeftSection'
         LeftSection.AutomaticCanvasSize = Enum.AutomaticSize.XY
@@ -1028,33 +1005,12 @@ function Library:create_ui()
 
         self._tab += 1
 
-        local isLocked = false
-        local isPremium = MarketplaceService:UserOwnsAssetAsync(LocalPlayer.UserId, tonumber(premium_id))
-
-        function TabManager:lock(state)
-            isLocked = state
-            LockIcon.Visible = state and not isPremium
-            if state and not isPremium then
-                Tab.MouseButton1Click:Connect(function()
-                    Library.SendNotification({title = "Locked", text = "Premium required", duration = 3})
-                end)
-            else
-                Tab.MouseButton1Click:Connect(function()
-                    self:update_tabs(Tab, LeftSection, RightSection)
-                    self:update_sections(LeftSection, RightSection)
-                end)
-            end
-        end
-
         if first_tab then
             self:update_tabs(Tab, LeftSection, RightSection)
             self:update_sections(LeftSection, RightSection)
         end
 
         Tab.MouseButton1Click:Connect(function()
-            if isLocked and not isPremium then
-                return
-            end
             self:update_tabs(Tab, LeftSection, RightSection)
             self:update_sections(LeftSection, RightSection)
         end)
@@ -1781,10 +1737,6 @@ function Library:create_ui()
                     Config:save(configFileName, Library._config)
                     settings.callback(self._state)
                 end
-
-                function CheckboxManager:value(state)
-                    self:change_state(state)
-                end
             
                 if Library:flag_type(settings.flag, "boolean") then
                     CheckboxManager:change_state(Library._config._flags[settings.flag])
@@ -1929,21 +1881,58 @@ function Library:create_ui()
             end
 
             function ModuleManager:create_line()
-                LayoutOrderModule = LayoutOrderModule + 1
+                LayoutOrderModule = LayoutOrderModule + 1;
 
-                local LineFrame = Instance.new('Frame')
-                LineFrame.Name = 'Line'
-                LineFrame.Size = UDim2.new(1, 0, 0, 2)
-                LineFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 139)
-                LineFrame.BorderSizePixel = 0
-                LineFrame.Parent = Options
-                LineFrame.LayoutOrder = LayoutOrderModule
+                if self._size == 0 then
+                    self._size = 11
+                end
 
-                local LineCorner = Instance.new('UICorner')
-                LineCorner.CornerRadius = UDim.new(0, 1)
-                LineCorner.Parent = LineFrame
+                self._size += 27
 
-                return LineFrame
+                if ModuleManager._state then
+                    Module.Size = UDim2.fromOffset(241, 93 + self._size)
+                end
+
+                Options.Size = UDim2.fromOffset(241, self._size)
+
+                local dividerHeight = 1
+                local dividerWidth = 207 
+
+                local OuterFrame = Instance.new('Frame')
+                OuterFrame.Size = UDim2.new(0, dividerWidth, 0, 20) 
+                OuterFrame.BackgroundTransparency = 1 
+                OuterFrame.Name = 'OuterFrame'
+                OuterFrame.Parent = Options
+                OuterFrame.LayoutOrder = LayoutOrderModule
+
+                local Divider = Instance.new('Frame')
+                Divider.Size = UDim2.new(1, 0, 0, dividerHeight)
+                Divider.BackgroundColor3 = Color3.fromRGB(25, 25, 112) 
+                Divider.BorderSizePixel = 0
+                Divider.Name = 'Divider'
+                Divider.Parent = OuterFrame
+                Divider.ZIndex = 2;
+                Divider.Position = UDim2.new(0, 0, 0.5, -dividerHeight / 2) 
+
+                local Gradient = Instance.new('UIGradient')
+                Gradient.Parent = Divider
+                Gradient.Color = ColorSequence.new({
+                    ColorSequenceKeypoint.new(0, Color3.fromRGB(25, 25, 112)),  
+                    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(25, 25, 112)), 
+                    ColorSequenceKeypoint.new(1, Color3.fromRGB(25, 25, 112, 0))  
+                })
+                Gradient.Transparency = NumberSequence.new({
+                    NumberSequenceKeypoint.new(0, 1),   
+                    NumberSequenceKeypoint.new(0.5, 0),
+                    NumberSequenceKeypoint.new(1, 1)
+                })
+                Gradient.Rotation = 0 
+
+                local UICorner = Instance.new('UICorner')
+                UICorner.CornerRadius = UDim.new(0, 2) 
+                UICorner.Parent = Divider
+
+                return OuterFrame
             end
             
             function ModuleManager:create_slider(settings: any)
