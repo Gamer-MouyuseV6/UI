@@ -73,9 +73,9 @@ local Library do
         FadeSpeed = 0.2,
 
         Folders = {
-            Directory = "matcha",
-            Configs = "matcha/Configs",
-            Assets = "matcha/Assets",
+            Directory = "Mouse Hub",
+            Configs = "Mouse Hub/Configs",
+            Assets = "Mouse Hub/Assets",
         },
 
         Images = {
