@@ -1,4 +1,4 @@
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Gamer-MouyuseV6/UI/refs/heads/main/UIlib.lua"))()
+local lib = loadstring(game:HttpGet("https://raw.githubusercontent.com/Gamer-MouyuseV6/UI/refs/heads/main/UIlib.lua"))()
 
 local Window = Library:Window({
     Logo = "77218680285262",
