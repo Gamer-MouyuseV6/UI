@@ -6237,3 +6237,6 @@ local Library do
         return SettingsPage
     end
 end
+
+getgenv().Library = Library
+return Library
