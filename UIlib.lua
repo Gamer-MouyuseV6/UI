@@ -2,6 +2,8 @@ if Library then
     Library:Unload()
 end
 
+local Library = {}
+
 local LoadTick = os.clock()
 
 local Library do
